@@ -6,6 +6,11 @@
 #include "Visioneer/Core/Base.h"
 #include "Visioneer/ImGui/ImGuiLayer.h"
 
+#include "Visioneer/Panels/ViewerPanel.h"
+#include "Visioneer/Panels/ContentBrowserPanel.h"
+#include "Visioneer/Panels/ModelsControlPanel.h"
+#include "Visioneer/Panels/ImageAugmentationPanel.h"
+
 namespace Visioneer
 {
 
@@ -27,6 +32,11 @@ public:
 private:
     GLFWwindow *mWindow;
     ImGuiLayer *mImGuiLayer;
+
+    ViewerPanel            *mViewerPanel;
+    ContentBrowserPanel    *mContentBrowserPanel;
+    ModelsControlPanel     *mModelsControlPanel;
+    ImageAugmentationPanel *mImageAugmentationPanel;
 
     static Application* sInstance;
 };

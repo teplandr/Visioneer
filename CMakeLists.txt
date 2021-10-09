@@ -5,7 +5,7 @@ project(Visioneer LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(OpenCV 4.4.0 REQUIRED)
+find_package(OpenCV 4.5.3 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 include_directories("src/")
@@ -30,3 +30,4 @@ file(GLOB_RECURSE SOURCES "src/*")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} glfw imgui Glad spdlog)
+target_link_libraries(${PROJECT_NAME} opencv_imgcodecs opencv_dnn)

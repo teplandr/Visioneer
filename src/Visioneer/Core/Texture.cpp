@@ -57,7 +57,7 @@ Texture::Texture(const cv::Mat &image)
         }
     }
 
-    BC_TRACE("Width = {0}, Height = {1}, Channels = {2}, Step = {3}, Type = {4}", mWidth, mHeight, image.channels(), image.step, image.type());
+    VSR_TRACE("Width = {0}, Height = {1}, Channels = {2}, Step = {3}, Type = {4}", mWidth, mHeight, image.channels(), image.step, image.type());
 
     glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
     glTextureStorage2D(mRendererID, 1, mInternalFormat, image.cols, image.rows);
