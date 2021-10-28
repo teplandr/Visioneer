@@ -2,7 +2,7 @@
 
 #include <opencv2/core.hpp>
 
-#include "Visioneer/Models/UltraFace.h"
+#include "Visioneer/Models/Model.h"
 
 namespace Visioneer
 {

@@ -2,6 +2,8 @@
 #include "ViewerPanel.h"
 
 #include "Visioneer/Core/Base.h"
+#include "Visioneer/Models/UltraFace.h"
+#include "Visioneer/Models/YOLOX.h"
 
 #include <imgui.h>
 
@@ -11,7 +13,7 @@ namespace Visioneer
 ModelsControlPanel::ModelsControlPanel()
 {
     mModels.emplace_back(new UltraFace);
-    mModels.emplace_back(new OpenPose);
+    mModels.emplace_back(new YOLOX);
 }
 
 ModelsControlPanel::~ModelsControlPanel()
@@ -83,7 +85,7 @@ void ModelsControlPanel::drawSelectedModel()
             return isUpdated;
         });
 
-        isUpdated |= drawModel<OpenPose>([](OpenPose *)
+        isUpdated |= drawModel<YOLOX>([](YOLOX *)
         {
             return false;
         });

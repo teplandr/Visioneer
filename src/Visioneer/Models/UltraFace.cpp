@@ -16,7 +16,7 @@ UltraFace::~UltraFace()
 void UltraFace::onAttach()
 {
     // try catch
-    mNet = cv::dnn::readNetFromONNX("/home/abt4/Projects/Visioneer/resources/models/UltraFace-640-sim.onnx");
+    mNet = cv::dnn::readNetFromONNX("../resources/models/UltraFace.onnx");
     mIsAttached = true;
 }
 

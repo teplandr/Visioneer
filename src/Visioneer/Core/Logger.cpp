@@ -18,9 +18,4 @@ void Logger::init()
     sInstance->flush_on(spdlog::level::trace);
 }
 
-spdlog::source_loc Logger::codeLocation(const char *filename, int line, const char *funcname)
-{
-    return {filename, line, funcname};
-}
-
 }

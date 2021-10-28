@@ -13,7 +13,7 @@ public:
     static void init();
     static std::shared_ptr<spdlog::logger>& get() { return sInstance; }
 
-    static spdlog::source_loc codeLocation(const char *filename, int line, const char *funcname);
+    constexpr static spdlog::source_loc codeLocation(const char *filename, int line, const char *funcname) { return {filename, line, funcname}; }
 
 private:
     static std::shared_ptr<spdlog::logger> sInstance;

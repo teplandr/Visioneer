@@ -5,10 +5,15 @@ project(Visioneer LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include_directories("src/")
+
 find_package(OpenCV 4.5.3 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-include_directories("src/")
+# temporary
+set(ONNXRUNTIME_DIR "~/libs/onnxruntime-1.9.0")
+include_directories("${ONNXRUNTIME_DIR}/include")
+link_directories("${ONNXRUNTIME_DIR}/lib")
 
 add_subdirectory("3rdparty/spdlog")
 
@@ -29,5 +34,7 @@ file(GLOB_RECURSE SOURCES "src/*")
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} glfw imgui Glad spdlog)
+target_link_libraries(${PROJECT_NAME} spdlog)
+target_link_libraries(${PROJECT_NAME} glfw imgui Glad)
 target_link_libraries(${PROJECT_NAME} opencv_imgcodecs opencv_dnn)
+target_link_libraries(${PROJECT_NAME} onnxruntime)
