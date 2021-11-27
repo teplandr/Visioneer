@@ -13,6 +13,8 @@ namespace Visioneer
 ImageAugmentationPanel::ImageAugmentationPanel()
 {
     mAugmentorDescriptors.emplace_back(Augmentor::Type::GammaCorrection);
+    mAugmentorDescriptors.emplace_back(Augmentor::Type::GaussianBlur);
+    mAugmentorDescriptors.emplace_back(Augmentor::Type::GaussianNoise);
 }
 
 void ImageAugmentationPanel::onImGuiRender()
