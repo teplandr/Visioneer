@@ -47,10 +47,13 @@ void AnnotationRenderer::operator()(const BBoxesAnnotation& annotation)
 
         ImVec2 tl(mInitPos.x + currentBBox.X1 * mSize.x, mInitPos.y + currentBBox.Y1 * mSize.y);
         ImVec2 br(mInitPos.x + currentBBox.X2 * mSize.x, mInitPos.y + currentBBox.Y2 * mSize.y);
-        drawList->AddRect(tl, br, ColorsCOCO[classID], 1.f, 0, 3.f);
+        drawList->AddRect(tl, br, ColorsCOCO[classID], 0.f, 0, 3.f);
 
         if (mMousePos.x >= tl.x && mMousePos.x <= br.x && mMousePos.y >= tl.y && mMousePos.y <= br.y)
+        {
+            drawList->AddRectFilled(tl, br, ColorsCOCO[classID] & 0x0fffffff, 0.f, 0);
             ImGui::SetTooltip("%s (%.3f)", ClassNamesCOCO[classID], score);
+        }
     }
 }
 
