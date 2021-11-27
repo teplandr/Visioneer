@@ -33,13 +33,13 @@ struct KeypointsAnnotation
 {
 };
 
-struct SemSegmentAnnotation
+struct SemanticSegmentAnnotation
 {
 };
 
 using VariantAnnotation = std::variant<EmptyAnnotation,
                                        BBoxesAnnotation,
                                        KeypointsAnnotation,
-                                       SemSegmentAnnotation>;
+                                       SemanticSegmentAnnotation>;
 
 }

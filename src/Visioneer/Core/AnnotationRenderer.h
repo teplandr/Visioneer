@@ -16,7 +16,7 @@ public:
     void operator()(const EmptyAnnotation& annotation);
     void operator()(const BBoxesAnnotation& annotation);
     void operator()(const KeypointsAnnotation& annotation);
-    void operator()(const SemSegmentAnnotation& annotation);
+    void operator()(const SemanticSegmentAnnotation& annotation);
 
 private:
     ImVec2 mInitPos;
