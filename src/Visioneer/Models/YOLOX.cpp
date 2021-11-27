@@ -1,6 +1,7 @@
 #include "YOLOX.h"
-
 #include "Visioneer/Core/Base.h"
+
+#include <numeric>
 
 #include <opencv2/dnn.hpp>
 #include <opencv2/imgproc.hpp>
@@ -24,117 +25,131 @@ void YOLOX::onAttach()
 
     mSession = Ort::Session(mEnv, "../resources/models/YOLOX_Tiny.onnx", sessionOptions);
 
-    mIsAttached = true;
-}
-
-void YOLOX::onDetach()
-{
-    mIsAttached = false;
-}
-
-VariantAnnotation YOLOX::forward(const cv::Mat& image)
-{
     Ort::AllocatorWithDefaultOptions allocator;
 
     VSR_INFO("Amount of Inputs: {}", mSession.GetInputCount());
     VSR_INFO("Amount of Outputs: {}", mSession.GetOutputCount());
 
-    const char* inputName = mSession.GetInputName(0, allocator);
-    VSR_INFO("Input Name: {}", inputName);
+    // for each input
 
-    Ort::TypeInfo inputTypeInfo = mSession.GetInputTypeInfo(0);
-    auto inputTensorInfo = inputTypeInfo.GetTensorTypeAndShapeInfo();
+        const char* inputName = mSession.GetInputName(0, allocator);
+        VSR_INFO("Input Name: {}", inputName);
+        mInputNames.emplace_back(inputName);
 
-    ONNXTensorElementDataType inputType = inputTensorInfo.GetElementType();
-    VSR_INFO("Input Type: {}", inputType);
+        Ort::TypeInfo inputTypeInfo = mSession.GetInputTypeInfo(0);
+        auto inputTensorInfo = inputTypeInfo.GetTensorTypeAndShapeInfo();
 
-    const std::vector<int64_t>& inputDims = inputTensorInfo.GetShape();
-    VSR_INFO("Input Dimensions: {}", fmt::join(inputDims, "x"));
+        ONNXTensorElementDataType inputType = inputTensorInfo.GetElementType();
+        VSR_INFO("Input Type: {}", inputType);
 
-    const char* outputName = mSession.GetOutputName(0, allocator);
-    VSR_INFO("Output Name: {}", outputName);
+        mInputDims = inputTensorInfo.GetShape();
+        VSR_INFO("Input Dimensions: {}", fmt::join(mInputDims, "x"));
 
-    Ort::TypeInfo outputTypeInfo = mSession.GetOutputTypeInfo(0);
-    auto outputTensorInfo = outputTypeInfo.GetTensorTypeAndShapeInfo();
+    // for each output
 
-    ONNXTensorElementDataType outputType = outputTensorInfo.GetElementType();
-    VSR_INFO("Output Type: {}", outputType);
+        const char* outputName = mSession.GetOutputName(0, allocator);
+        VSR_INFO("Output Name: {}", outputName);
+        mOutputNames.emplace_back(outputName);
 
-    const std::vector<int64_t>& outputDims = outputTensorInfo.GetShape();
-    VSR_INFO("Output Dimensions: {}", fmt::join(outputDims, "x"));
+        Ort::TypeInfo outputTypeInfo = mSession.GetOutputTypeInfo(0);
+        auto outputTensorInfo = outputTypeInfo.GetTensorTypeAndShapeInfo();
 
-    cv::Mat inputImageAsTensor = cv::dnn::blobFromImage(image, 1., cv::Size(inputDims.at(3), inputDims.at(2)), {}, /*swapRB*/ true, /*crop*/ false, CV_32F);
+        ONNXTensorElementDataType outputType = outputTensorInfo.GetElementType();
+        VSR_INFO("Output Type: {}", outputType);
 
-    std::vector<float> outputTensorValues(outputTensorInfo.GetElementCount());
+        mOutputDims = outputTensorInfo.GetShape();
+        VSR_INFO("Output Dimensions: {}", fmt::join(mOutputDims, "x"));
 
-    std::vector<const char*> inputNames{inputName};
-    std::vector<const char*> outputNames{outputName};
-    std::vector<Ort::Value> inputTensors;
-    std::vector<Ort::Value> outputTensors;
+    initMultipliers();
 
+    mIsAttached = true;
+}
+
+void YOLOX::onDetach()
+{
+    mInputDims.clear();
+    mOutputDims.clear();
+    mInputNames.clear();
+    mOutputNames.clear();
+    mMultipliers.clear();
+
+    mIsAttached = false;
+}
+
+VariantAnnotation YOLOX::forward(const cv::Mat& image)
+{
     Ort::MemoryInfo memoryInfo = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
+
+    cv::Mat inputImageAsTensor = cv::dnn::blobFromImage(image, 1., cv::Size(mInputDims.at(3), mInputDims.at(2)),
+                                                        /*mean*/ {}, /*swapRB*/ true, /*crop*/ false, CV_32F);
+    std::vector<Ort::Value> inputTensors;
     inputTensors.push_back(Ort::Value::CreateTensor<float>(memoryInfo,
                                                            inputImageAsTensor.ptr<float>(),
-                                                           inputTensorInfo.GetElementCount(),
-                                                           inputDims.data(),
-                                                           inputDims.size()));
+                                                           std::accumulate(mInputDims.begin(), mInputDims.end(), 1, std::multiplies<int64_t>()),
+                                                           mInputDims.data(),
+                                                           mInputDims.size()));
+
+    std::vector<float> outputTensorValues(std::accumulate(mOutputDims.begin(), mOutputDims.end(), 1, std::multiplies<int64_t>()));
+    std::vector<Ort::Value> outputTensors;
     outputTensors.push_back(Ort::Value::CreateTensor<float>(memoryInfo,
                                                             outputTensorValues.data(),
                                                             outputTensorValues.size(),
-                                                            outputDims.data(),
-                                                            outputDims.size()));
+                                                            mOutputDims.data(),
+                                                            mOutputDims.size()));
 
-    mSession.Run(Ort::RunOptions{nullptr}, inputNames.data(), inputTensors.data(), 1, outputNames.data(), outputTensors.data(), 1);
+    mSession.Run(Ort::RunOptions{}, mInputNames.data(), inputTensors.data(), inputTensors.size(),
+                                    mOutputNames.data(), outputTensors.data(), inputTensors.size());
 
-    /* Do not work
     BBoxesAnnotation annotation;
     annotation.BBoxes.reserve(128);
     annotation.Scores.reserve(128);
     annotation.Classes.reserve(128);
 
-    std::vector<int> strides{8, 16, 32};
-    for (size_t strideIndex = 0; strideIndex < strides.size(); ++strideIndex)
+    for (size_t i = 0; i < mMultipliers.size(); ++i)
     {
-        const int stride = strides[strideIndex];
-        int numGridY = inputDims.at(2) / stride;
-        int numGridX = inputDims.at(3) / stride;
+        const auto& [gridX, gridY, stride] = mMultipliers.at(i);
+        int index = i * 85;
+
+        // yolox/models/yolo_head.py decode logic
+        float xCenter = (outputTensorValues[index + 0] + gridX) * stride / mInputDims.at(3);
+        float yCenter = (outputTensorValues[index + 1] + gridY) * stride / mInputDims.at(2);
+        float w = exp(outputTensorValues[index + 2]) * stride / mInputDims.at(3);
+        float h = exp(outputTensorValues[index + 3]) * stride / mInputDims.at(2);
+
+        float x1 = xCenter - w * 0.5f;
+        float y1 = yCenter - h * 0.5f;
+
+        float objectness = outputTensorValues[index + 4];
+        for (int classID = 0; classID < 80; ++classID)
+        {
+            float score = objectness * outputTensorValues[index + 5 + classID];
+            if (score > 0.2f)
+            {
+                annotation.BBoxes.emplace_back(x1, y1, x1 + w, y1 + h);
+                annotation.Scores.emplace_back(score);
+                annotation.Classes.emplace_back(classID);
+            }
+        }
+    }
+
+    return annotation;
+}
+
+void YOLOX::initMultipliers()
+{
+    std::vector<int> strides{8, 16, 32};
+    for (const int stride : strides)
+    {
+        int numGridY = mInputDims.at(2) / stride;
+        int numGridX = mInputDims.at(3) / stride;
         for (int gridY = 0; gridY < numGridY; ++gridY)
         {
             for (int gridX = 0; gridX < numGridX; ++gridX)
             {
-                const int index = gridX + numGridX * gridY + numGridX * numGridY * strideIndex + numGridX * numGridY * (80 + 5);
-
-                // yolox/models/yolo_head.py decode logic
-                float xCenter = (outputTensorValues[index + 0] + gridX) * stride;
-                float yCenter = (outputTensorValues[index + 1] + gridY) * stride;
-                float w = exp(outputTensorValues[index + 2]) * stride;
-                float h = exp(outputTensorValues[index + 3]) * stride;
-
-                float x1 = xCenter - w * 0.5f;
-                float y1 = yCenter - h * 0.5f;
-
-                annotation.BBoxes.emplace_back(x1, y1, x1 + w, y1 + h);
-                annotation.Scores.emplace_back(1.);
-                annotation.Classes.emplace_back(0);
+                mMultipliers.emplace_back(gridX, gridY, stride);
             }
         }
     }
-    */
-
-    /* For debug
-    for (int64_t i = 0; i < outputDims.at(1); ++i)
-    {
-        if (outputTensorValues[outputDims.at(2) * i + 4] > 0.5f)
-            VSR_INFO("{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}", outputTensorValues[outputDims.at(2) * i + 0],
-                                                                  outputTensorValues[outputDims.at(2) * i + 1],
-                                                                  outputTensorValues[outputDims.at(2) * i + 2],
-                                                                  outputTensorValues[outputDims.at(2) * i + 3],
-                                                                  outputTensorValues[outputDims.at(2) * i + 4],
-                                                                  outputTensorValues[outputDims.at(2) * i + 5]);
-    }
-    */
-
-    return EmptyAnnotation();
 }
 
 }
