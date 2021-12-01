@@ -24,6 +24,13 @@ struct EmptyAnnotation
 
 struct BBoxesAnnotation
 {
+    enum class DatasetType
+    {
+        OneClass,
+        COCO
+    };
+
+    DatasetType        Type;
     std::vector<Rect>  BBoxes;
     std::vector<float> Scores;
     std::vector<int>   Classes;

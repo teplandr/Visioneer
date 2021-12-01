@@ -19,6 +19,9 @@ public:
     void operator()(const SemanticSegmentAnnotation& annotation);
 
 private:
+    ImU32 changeAlpha(ImU32 color, float desiredAlpha);
+
+private:
     ImVec2 mInitPos;
     ImVec2 mSize;
     ImVec2 mMousePos;

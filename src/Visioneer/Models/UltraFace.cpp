@@ -51,6 +51,7 @@ VariantAnnotation UltraFace::forward(const cv::Mat &image)
     }
 
     BBoxesAnnotation annotation;
+    annotation.Type = BBoxesAnnotation::DatasetType::OneClass;
     annotation.BBoxes.reserve(128);
     annotation.Scores.reserve(128);
     annotation.Classes.reserve(128);

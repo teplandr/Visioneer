@@ -101,6 +101,7 @@ VariantAnnotation YOLOX::forward(const cv::Mat& image)
                                     mOutputNames.data(), outputTensors.data(), inputTensors.size());
 
     BBoxesAnnotation annotation;
+    annotation.Type = BBoxesAnnotation::DatasetType::COCO;
     annotation.BBoxes.reserve(128);
     annotation.Scores.reserve(128);
     annotation.Classes.reserve(128);
