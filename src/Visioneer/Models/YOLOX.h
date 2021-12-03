@@ -20,6 +20,10 @@ public:
 
     std::string getName() const override { return "YOLOX"; }
 
+    // temporary public (I guess)
+    float ConfidenceThreshold = 0.5f;
+    float SupperessionThreshold = 0.5f;
+
 private:
     void initMultipliers();
 
@@ -33,7 +37,6 @@ private:
     std::vector<const char*> mOutputNames;
 
     std::vector<std::tuple<int, int, int>> mMultipliers;
-
 };
 
 }

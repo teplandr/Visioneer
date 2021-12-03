@@ -1,6 +1,7 @@
 #include "UltraFace.h"
 
 #include "Visioneer/Core/Base.h"
+#include "Visioneer/Models/Utilities.h"
 
 namespace Visioneer
 {
@@ -52,23 +53,28 @@ VariantAnnotation UltraFace::forward(const cv::Mat &image)
 
     BBoxesAnnotation annotation;
     annotation.Type = BBoxesAnnotation::DatasetType::OneClass;
-    annotation.BBoxes.reserve(128);
-    annotation.Scores.reserve(128);
-    annotation.Classes.reserve(128);
+    annotation.Items.reserve(128);
 
     for (int i = 0; i < outputTensors[0].size[1]; ++i)
     {
         float currentConfidence = outputTensors[0].at<float>(0, i, 1);
         if (currentConfidence > ConfidenceThreshold)
         {
-            annotation.BBoxes.emplace_back(outputTensors[1].at<float>(0, i, 0),
-                                           outputTensors[1].at<float>(0, i, 1),
-                                           outputTensors[1].at<float>(0, i, 2),
-                                           outputTensors[1].at<float>(0, i, 3));
-            annotation.Scores.emplace_back(currentConfidence);
-            annotation.Classes.emplace_back(0);
+            Rect bbox {outputTensors[1].at<float>(0, i, 0),
+                       outputTensors[1].at<float>(0, i, 1),
+                       outputTensors[1].at<float>(0, i, 2),
+                       outputTensors[1].at<float>(0, i, 3)};
+            annotation.Items.emplace_back(bbox, currentConfidence, 0);
         }
     }
+
+    Utilities::nonMaximumSupperession(annotation.Items, SupperessionThreshold);
+
+    // is needed for visualization while mouse is hovering over rect
+    std::sort(annotation.Items.begin(), annotation.Items.end(), [](const auto& lhs, const auto& rhs)
+    {
+        return lhs.BBox.area() < rhs.BBox.area();
+    });
 
     return annotation;
 }

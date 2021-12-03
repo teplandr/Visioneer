@@ -6,7 +6,7 @@ namespace Visioneer
 {
 
 ContentBrowserPanel::ContentBrowserPanel()
-    : mCurrentDirectory(std::filesystem::current_path().parent_path().append("resources"))
+    : mCurrentDirectory(std::filesystem::current_path().parent_path().append("resources").append("images"))
 {
 }
 

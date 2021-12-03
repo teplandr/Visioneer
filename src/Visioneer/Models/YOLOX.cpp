@@ -1,5 +1,6 @@
 #include "YOLOX.h"
 #include "Visioneer/Core/Base.h"
+#include "Visioneer/Models/Utilities.h"
 
 #include <numeric>
 
@@ -102,9 +103,7 @@ VariantAnnotation YOLOX::forward(const cv::Mat& image)
 
     BBoxesAnnotation annotation;
     annotation.Type = BBoxesAnnotation::DatasetType::COCO;
-    annotation.BBoxes.reserve(128);
-    annotation.Scores.reserve(128);
-    annotation.Classes.reserve(128);
+    annotation.Items.reserve(128);
 
     for (size_t i = 0; i < mMultipliers.size(); ++i)
     {
@@ -124,14 +123,21 @@ VariantAnnotation YOLOX::forward(const cv::Mat& image)
         for (int classID = 0; classID < 80; ++classID)
         {
             float score = objectness * outputTensorValues[index + 5 + classID];
-            if (score > 0.2f)
+            if (score > ConfidenceThreshold)
             {
-                annotation.BBoxes.emplace_back(x1, y1, x1 + w, y1 + h);
-                annotation.Scores.emplace_back(score);
-                annotation.Classes.emplace_back(classID);
+                Rect bbox{x1, y1, x1 + w, y1 + h};
+                annotation.Items.emplace_back(bbox, score, classID);
             }
         }
     }
+
+    Utilities::nonMaximumSupperession(annotation.Items, SupperessionThreshold);
+
+    // is needed for visualization while mouse is hovering over rect
+    std::sort(annotation.Items.begin(), annotation.Items.end(), [](const auto& lhs, const auto& rhs)
+    {
+        return lhs.BBox.area() < rhs.BBox.area();
+    });
 
     return annotation;
 }

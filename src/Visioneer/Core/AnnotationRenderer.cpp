@@ -51,20 +51,18 @@ void AnnotationRenderer::operator()(const EmptyAnnotation&)
 void AnnotationRenderer::operator()(const BBoxesAnnotation& annotation)
 {
     ImDrawList *drawList = ImGui::GetWindowDrawList();
-    for (size_t i = 0; i < annotation.BBoxes.size(); ++i)
+    bool isBBoxSelected = false;
+    for (const auto& [bbox, score, classID] : annotation.Items)
     {
-        const Rect& currentBBox = annotation.BBoxes.at(i);
-        float score = annotation.Scores.at(i);
-        int classID = annotation.Classes.at(i);
-
-        ImVec2 tl(mInitPos.x + currentBBox.X1 * mSize.x, mInitPos.y + currentBBox.Y1 * mSize.y);
-        ImVec2 br(mInitPos.x + currentBBox.X2 * mSize.x, mInitPos.y + currentBBox.Y2 * mSize.y);
+        ImVec2 tl(mInitPos.x + bbox.X1 * mSize.x, mInitPos.y + bbox.Y1 * mSize.y);
+        ImVec2 br(mInitPos.x + bbox.X2 * mSize.x, mInitPos.y + bbox.Y2 * mSize.y);
         drawList->AddRect(tl, br, TypeSpecificColors.at(annotation.Type).at(classID), 0.f, 0, 3.f);
 
-        if (mMousePos.x >= tl.x && mMousePos.x <= br.x && mMousePos.y >= tl.y && mMousePos.y <= br.y)
+        if (!isBBoxSelected && mMousePos.x >= tl.x && mMousePos.x <= br.x && mMousePos.y >= tl.y && mMousePos.y <= br.y)
         {
-            drawList->AddRectFilled(tl, br, changeAlpha(TypeSpecificColors.at(annotation.Type).at(classID), 0.2f), 0.f, 0);
+            drawList->AddRectFilled(tl, br, changeAlpha(TypeSpecificColors.at(annotation.Type).at(classID), 0.25f), 0.f, 0);
             ImGui::SetTooltip("%s (%.3f)", TypeSpecificClassNames.at(annotation.Type).at(classID), score);
+            isBBoxSelected = true;
         }
     }
 }

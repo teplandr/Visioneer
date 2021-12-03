@@ -20,12 +20,12 @@ public:
 
     std::string getName() const override { return "UltraFace"; }
 
-    // temp
+    // temporary public (I guess)
     float ConfidenceThreshold = 0.5f;
+    float SupperessionThreshold = 0.5f;
 
 private:
     cv::dnn::Net mNet;
-
 };
 
 }

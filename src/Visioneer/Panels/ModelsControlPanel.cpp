@@ -81,13 +81,18 @@ void ModelsControlPanel::drawSelectedModel()
 
         isUpdated |= drawModel<UltraFace>([](UltraFace *modelPtr)
         {
-            bool isUpdated = ImGui::SliderFloat("Confidence", &modelPtr->ConfidenceThreshold, 0.f, 1.f);
+            bool isUpdated = false;
+            isUpdated |= ImGui::SliderFloat("Confidence", &modelPtr->ConfidenceThreshold, 0.f, 1.f);
+            isUpdated |= ImGui::SliderFloat("Supperession", &modelPtr->SupperessionThreshold, 0.f, 1.f);
             return isUpdated;
         });
 
-        isUpdated |= drawModel<YOLOX>([](YOLOX *)
+        isUpdated |= drawModel<YOLOX>([](YOLOX *modelPtr)
         {
-            return false;
+            bool isUpdated = false;
+            isUpdated |= ImGui::SliderFloat("Confidence", &modelPtr->ConfidenceThreshold, 0.f, 1.f);
+            isUpdated |= ImGui::SliderFloat("Supperession", &modelPtr->SupperessionThreshold, 0.f, 1.f);
+            return isUpdated;
         });
 
         if (isUpdated)
