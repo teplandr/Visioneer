@@ -16,6 +16,8 @@ UltraFace::~UltraFace()
 
 void UltraFace::onAttach()
 {
+    VSR_INFO("");
+
     // try catch
     mNet = cv::dnn::readNetFromONNX("../resources/models/UltraFace.onnx");
     mIsAttached = true;
@@ -23,6 +25,8 @@ void UltraFace::onAttach()
 
 void UltraFace::onDetach()
 {
+    VSR_INFO("");
+
     // somehow release mNet if possible
     mIsAttached = false;
 }

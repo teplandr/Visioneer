@@ -5,6 +5,8 @@
 #include "Visioneer/Models/UltraFace.h"
 #include "Visioneer/Models/YOLOX.h"
 
+#include "Visioneer/ImGui/CustomWidgets.h"
+
 #include <imgui.h>
 
 namespace Visioneer
@@ -109,22 +111,20 @@ bool ModelsControlPanel::drawModel(DrawFuncPtr drawFuncPtr)
     if (modelPtr)
     {
         ImGui::Text("%s", modelPtr->getName().c_str());
+        ImGui::SameLine();
 
+        static bool mIsModelEnabled = false;
+        ToggleButton(modelPtr->getName().c_str(), &mIsModelEnabled);
         isUpdated |= drawFuncPtr(modelPtr);
 
-        const char *label = modelPtr->isAttached() ? "Remove" : "Create";
-        if (ImGui::Button(label))
+        if (mIsModelEnabled && !modelPtr->isAttached())
         {
-            if (modelPtr->isAttached())
-            {
-                modelPtr->onDetach();
-                mSelectedModel = nullptr;
-            }
-            else
-            {
-                modelPtr->onAttach();
-            }
-
+            modelPtr->onAttach();
+            isUpdated = true;
+        }
+        if (!mIsModelEnabled && modelPtr->isAttached())
+        {
+            modelPtr->onDetach();
             isUpdated = true;
         }
     }

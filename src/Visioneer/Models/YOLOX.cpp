@@ -68,6 +68,8 @@ void YOLOX::onAttach()
 
 void YOLOX::onDetach()
 {
+    VSR_INFO("");
+
     mInputDims.clear();
     mOutputDims.clear();
     mInputNames.clear();
