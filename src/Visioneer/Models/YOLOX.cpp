@@ -101,7 +101,7 @@ VariantAnnotation YOLOX::forward(const cv::Mat& image)
                                                             mOutputDims.size()));
 
     mSession.Run(Ort::RunOptions{}, mInputNames.data(), inputTensors.data(), inputTensors.size(),
-                                    mOutputNames.data(), outputTensors.data(), inputTensors.size());
+                                    mOutputNames.data(), outputTensors.data(), outputTensors.size());
 
     BBoxesAnnotation annotation;
     annotation.Type = BBoxesAnnotation::DatasetType::COCO;
