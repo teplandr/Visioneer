@@ -12,7 +12,7 @@ ContentBrowserPanel::ContentBrowserPanel()
 
 void ContentBrowserPanel::onImGuiRender()
 {
-    ImGui::Begin("Content Browser");
+    ImGui::Begin("Content Browser", nullptr, ImGuiWindowFlags_NoMove);
 
     ImGui::TextWrapped("WD: %s", mCurrentDirectory.c_str());
 

@@ -19,7 +19,7 @@ ImageAugmentationPanel::ImageAugmentationPanel()
 
 void ImageAugmentationPanel::onImGuiRender()
 {
-    ImGui::Begin("Image Augmentation Panel");
+    ImGui::Begin("Image Augmentation Panel", nullptr, ImGuiWindowFlags_NoMove);
 
     if (ImGui::Button("Add/remove augmentation"))
         ImGui::OpenPopup("AugmentationPopup");

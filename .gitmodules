@@ -7,5 +7,5 @@
 	branch = v1.x
 [submodule "3rdparty/imgui"]
 	path = 3rdparty/imgui
-	url = https://github.com/bur1k/imgui.git
-	branch = docking
+	url = https://github.com/teplandr/imgui.git
+	branch = master

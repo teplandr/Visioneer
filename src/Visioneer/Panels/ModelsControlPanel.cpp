@@ -26,7 +26,7 @@ ModelsControlPanel::~ModelsControlPanel()
 
 void ModelsControlPanel::onImGuiRender()
 {
-    ImGui::Begin("Models Control Panel");
+    ImGui::Begin("Models Control Panel", nullptr, ImGuiWindowFlags_NoMove);
 
     if (ImGui::Button("Select model"))
         ImGui::OpenPopup("ModelSelectionPopup");

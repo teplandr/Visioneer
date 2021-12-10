@@ -16,7 +16,7 @@ ViewerPanel::ViewerPanel()
 
 void ViewerPanel::onImGuiRender()
 {
-    ImGui::Begin("Viewer", nullptr, ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("Viewer", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove);
 
     ImVec2 displayTextureSize = ImVec2(mTexture->width(), mTexture->height());
 

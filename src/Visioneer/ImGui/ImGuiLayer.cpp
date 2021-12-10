@@ -21,7 +21,8 @@ void ImGuiLayer::onAttach()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    ImGui::StyleColorsDark();
+    ImGui::Spectrum::StyleColorsSpectrum();
+    ImGui::Spectrum::LoadFont(18);
 
     Application& app = Application::get();
     GLFWwindow* window = app.getWindow();
