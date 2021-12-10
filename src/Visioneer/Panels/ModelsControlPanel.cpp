@@ -94,6 +94,14 @@ void ModelsControlPanel::drawSelectedModel()
             bool isUpdated = false;
             isUpdated |= ImGui::SliderFloat("Confidence", &modelPtr->ConfidenceThreshold, 0.f, 1.f);
             isUpdated |= ImGui::SliderFloat("Supperession", &modelPtr->SupperessionThreshold, 0.f, 1.f);
+
+            // TODO: get names from model and change version
+            // static int currentIndex = 0;
+            // static const char* names[2] = {"Tiny", "Medium"};
+            // ImGui::BeginDisabled(modelPtr->isAttached());
+            // ImGui::Combo("Version", &currentIndex, names, 2);
+            // ImGui::EndDisabled();
+
             return isUpdated;
         });
 

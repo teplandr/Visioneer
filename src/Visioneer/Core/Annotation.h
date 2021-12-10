@@ -49,17 +49,17 @@ struct BBoxesAnnotation
     std::vector<Item> Items;
 };
 
-struct KeypointsAnnotation
-{
-};
-
 struct SemanticSegmentAnnotation
+{
+}; 
+
+struct KeypointsAnnotation
 {
 };
 
 using VariantAnnotation = std::variant<EmptyAnnotation,
                                        BBoxesAnnotation,
-                                       KeypointsAnnotation,
-                                       SemanticSegmentAnnotation>;
+                                       SemanticSegmentAnnotation,
+                                       KeypointsAnnotation>;
 
 }

@@ -54,8 +54,8 @@ void AnnotationRenderer::operator()(const BBoxesAnnotation& annotation)
     bool isBBoxSelected = false;
     for (const auto& [bbox, score, classID] : annotation.Items)
     {
-        ImVec2 tl(mInitPos.x + bbox.X1 * mSize.x, mInitPos.y + bbox.Y1 * mSize.y);
-        ImVec2 br(mInitPos.x + bbox.X2 * mSize.x, mInitPos.y + bbox.Y2 * mSize.y);
+        ImVec2 tl(mInitPos.x + bbox.X1 * mViewerSize.x, mInitPos.y + bbox.Y1 * mViewerSize.y);
+        ImVec2 br(mInitPos.x + bbox.X2 * mViewerSize.x, mInitPos.y + bbox.Y2 * mViewerSize.y);
         drawList->AddRect(tl, br, TypeSpecificColors.at(annotation.Type).at(classID), 0.f, 0, 3.f);
 
         if (!isBBoxSelected && mMousePos.x >= tl.x && mMousePos.x <= br.x && mMousePos.y >= tl.y && mMousePos.y <= br.y)
@@ -67,11 +67,11 @@ void AnnotationRenderer::operator()(const BBoxesAnnotation& annotation)
     }
 }
 
-void AnnotationRenderer::operator()(const KeypointsAnnotation&)
+void AnnotationRenderer::operator()(const SemanticSegmentAnnotation&)
 {
 }
 
-void AnnotationRenderer::operator()(const SemanticSegmentAnnotation&)
+void AnnotationRenderer::operator()(const KeypointsAnnotation&)
 {
 }
 

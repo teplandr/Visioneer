@@ -10,7 +10,7 @@ namespace Visioneer
 class AnnotationRenderer
 {
 public:
-    void setInitPos(const ImVec2& initPos, const ImVec2& size) { mInitPos = initPos; mSize = size; }
+    void setInitPos(const ImVec2& initPos, const ImVec2& size) { mInitPos = initPos; mViewerSize = size; }
     void setMousePos(const ImVec2& mousePos) { mMousePos = mousePos; }
 
     void operator()(const EmptyAnnotation& annotation);
@@ -23,7 +23,7 @@ private:
 
 private:
     ImVec2 mInitPos;
-    ImVec2 mSize;
+    ImVec2 mViewerSize;
     ImVec2 mMousePos;
 };
 

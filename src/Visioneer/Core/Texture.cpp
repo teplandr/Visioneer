@@ -92,6 +92,8 @@ Texture::~Texture()
 {
     VSR_TRACE("Begin");
 
+    VSR_TRACE("Width = {}, Height = {}", mWidth, mHeight);
+
     glDeleteTextures(1, &mRendererID);
 
     VSR_TRACE("End");
