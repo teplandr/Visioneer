@@ -84,7 +84,7 @@ void ModelsControlPanel::drawSelectedModel()
         isUpdated |= drawModel<UltraFace>([](UltraFace *modelPtr)
         {
             bool isUpdated = false;
-            isUpdated |= ImGui::SliderFloat("Confidence", &modelPtr->ConfidenceThreshold, 0.f, 1.f);
+            isUpdated |= ImGui::SliderFloat("Confidence",   &modelPtr->ConfidenceThreshold,   0.f, 1.f);
             isUpdated |= ImGui::SliderFloat("Supperession", &modelPtr->SupperessionThreshold, 0.f, 1.f);
             return isUpdated;
         });
@@ -92,15 +92,16 @@ void ModelsControlPanel::drawSelectedModel()
         isUpdated |= drawModel<YOLOX>([](YOLOX *modelPtr)
         {
             bool isUpdated = false;
-            isUpdated |= ImGui::SliderFloat("Confidence", &modelPtr->ConfidenceThreshold, 0.f, 1.f);
-            isUpdated |= ImGui::SliderFloat("Supperession", &modelPtr->SupperessionThreshold, 0.f, 1.f);
 
-            // TODO: get names from model and change version
-            // static int currentIndex = 0;
-            // static const char* names[2] = {"Tiny", "Medium"};
-            // ImGui::BeginDisabled(modelPtr->isAttached());
-            // ImGui::Combo("Version", &currentIndex, names, 2);
-            // ImGui::EndDisabled();
+            ImGui::BeginDisabled(modelPtr->isAttached());
+
+            auto versionNames = modelPtr->getVersionNames();
+            ImGui::Combo("Version", &modelPtr->CurrentVersionNameIndex, versionNames.data(), versionNames.size());
+
+            ImGui::EndDisabled();
+
+            isUpdated |= ImGui::SliderFloat("Confidence",   &modelPtr->ConfidenceThreshold,   0.f, 1.f);
+            isUpdated |= ImGui::SliderFloat("Supperession", &modelPtr->SupperessionThreshold, 0.f, 1.f);
 
             return isUpdated;
         });

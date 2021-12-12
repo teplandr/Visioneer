@@ -20,9 +20,12 @@ public:
 
     std::string getName() const override { return "YOLOX"; }
 
+    std::vector<const char*> getVersionNames() const { return mVersionNames; }
+
     // temporary public (I guess)
     float ConfidenceThreshold = 0.5f;
     float SupperessionThreshold = 0.5f;
+    int CurrentVersionNameIndex = 0;
 
 private:
     void initMultipliers();
@@ -37,6 +40,20 @@ private:
     std::vector<const char*> mOutputNames;
 
     std::vector<std::tuple<int, int, int>> mMultipliers;
+
+    struct VersionNameModelPath
+    {
+        const char* Name;
+        const char* Path;
+    };
+
+    const std::vector<VersionNameModelPath> mVersionNamesModelPaths
+    {
+        {"Tiny",   "../resources/models/YOLOX_Tiny.onnx"},
+        {"Medium", "../resources/models/YOLOX_M.onnx"}
+    };
+
+    std::vector<const char*> mVersionNames;
 };
 
 }

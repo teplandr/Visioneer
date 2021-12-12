@@ -12,6 +12,8 @@ namespace Visioneer
 
 YOLOX::YOLOX()
 {
+    for (const auto& [name, path] : mVersionNamesModelPaths)
+        mVersionNames.push_back(name);
 }
 
 YOLOX::~YOLOX()
@@ -24,7 +26,7 @@ void YOLOX::onAttach()
     sessionOptions.SetIntraOpNumThreads(4);
     sessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
 
-    mSession = Ort::Session(mEnv, "../resources/models/YOLOX_Tiny.onnx", sessionOptions);
+    mSession = Ort::Session(mEnv, mVersionNamesModelPaths[CurrentVersionNameIndex].Path, sessionOptions);
 
     Ort::AllocatorWithDefaultOptions allocator;
 
