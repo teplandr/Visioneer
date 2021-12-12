@@ -3,6 +3,9 @@
 
 #include <glad/glad.h>
 
+namespace Visioneer
+{
+
 Texture::Texture(uint32_t width, uint32_t height)
     : mWidth(width), mHeight(height)
 {
@@ -103,4 +106,6 @@ void Texture::setData(const cv::Mat &image)
 {
     assert(image.cols == static_cast<int>(mWidth) && image.rows == static_cast<int>(mHeight) && "Texture has wrong size");
     glTextureSubImage2D(mRendererID, 0, 0, 0, static_cast<int>(mWidth), static_cast<int>(mHeight), mDataFormat, GL_UNSIGNED_BYTE, image.data);
+}
+
 }

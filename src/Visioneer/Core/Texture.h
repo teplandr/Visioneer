@@ -4,6 +4,9 @@
 
 #include <opencv2/core.hpp>
 
+namespace Visioneer
+{
+
 class Texture
 {
 public:
@@ -22,3 +25,5 @@ private:
     uint32_t mDataFormat, mInternalFormat;
     uint32_t mRendererID;
 };
+
+}
