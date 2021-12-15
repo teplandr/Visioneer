@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 
+#include "Visioneer/Core/Texture.h"
 #include "Visioneer/Core/Annotation.h"
 
 namespace Visioneer
@@ -20,11 +21,14 @@ public:
 
 private:
     ImU32 changeAlpha(ImU32 color, float desiredAlpha);
+    cv::Vec4b abgr2bgra(ImU32 color);
 
 private:
     ImVec2 mInitPos;
     ImVec2 mViewerSize;
     ImVec2 mMousePos;
+
+    std::shared_ptr<Texture> mSegmentationMask = nullptr;
 };
 
 }

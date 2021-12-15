@@ -4,6 +4,7 @@
 #include "Visioneer/Core/Base.h"
 #include "Visioneer/Models/UltraFace.h"
 #include "Visioneer/Models/YOLOX.h"
+#include "Visioneer/Models/PSPNet.h"
 
 #include "Visioneer/ImGui/CustomWidgets.h"
 
@@ -16,6 +17,7 @@ ModelsControlPanel::ModelsControlPanel()
 {
     mModels.emplace_back(new UltraFace);
     mModels.emplace_back(new YOLOX);
+    mModels.emplace_back(new PSPNet);
 }
 
 ModelsControlPanel::~ModelsControlPanel()
@@ -105,6 +107,8 @@ void ModelsControlPanel::drawSelectedModel()
 
             return isUpdated;
         });
+
+        isUpdated |= drawModel<PSPNet>([](PSPNet *){ return false; });
 
         if (isUpdated)
             runSelectedModel();

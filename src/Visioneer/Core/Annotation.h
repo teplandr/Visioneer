@@ -3,6 +3,8 @@
 #include <vector>
 #include <variant>
 
+#include <opencv2/core.hpp>
+
 namespace Visioneer
 {
 
@@ -51,6 +53,7 @@ struct BBoxesAnnotation
 
 struct SemanticSegmentAnnotation
 {
+    cv::Mat Mask;
 }; 
 
 struct KeypointsAnnotation

@@ -44,6 +44,21 @@ static std::unordered_map<BBoxesAnnotation::DatasetType, std::vector<uint32_t>> 
     {BBoxesAnnotation::DatasetType::COCO, ColorsCOCO}
 };
 
+static std::vector<const char*> ClassNamesVOC
+{
+    "background", "aeroplane", "bicycle", "bird", "boat", "bottle",
+    "bus", "car", "cat", "chair", "cow", "diningtable", "dog",
+    "horse", "motorbike", "person", "pottedplant", "sheep", "sofa",
+    "train", "tvmonitor"
+};
+
+static std::vector<uint32_t> ColorsVOC
+{
+    0xff000000, 0xff3c14dc, 0xffdcdcdc, 0xff4f4f2f, 0xff2f6b55, 0xff13458b, 0xff238e6b, 0xff578b2e,
+    0xff228b22, 0xff00007f, 0xff701919, 0xff006400, 0xff008080, 0xff8b3d48, 0xff2222b2, 0xffa09e5f,
+    0xff998877, 0xff71b33c, 0xff8f8fbc, 0xff993366, 0xffa9a9a9
+};
+
 void AnnotationRenderer::operator()(const EmptyAnnotation&)
 {
 }
@@ -67,8 +82,44 @@ void AnnotationRenderer::operator()(const BBoxesAnnotation& annotation)
     }
 }
 
-void AnnotationRenderer::operator()(const SemanticSegmentAnnotation&)
+void AnnotationRenderer::operator()(const SemanticSegmentAnnotation& annotation)
 {
+    // In future, this transform should be done by shader
+
+    uint8_t selectedClassID = 255;
+    if (mMousePos.x > 0.f && mMousePos.y > 0.f)
+    {
+        int hoveredRow = static_cast<int>(annotation.Mask.rows * (mMousePos.y - mInitPos.y) / mViewerSize.y);
+        int hoveredCol = static_cast<int>(annotation.Mask.cols * (mMousePos.x - mInitPos.x) / mViewerSize.x);
+
+        selectedClassID = annotation.Mask.at<uint8_t>(hoveredRow, hoveredCol);
+        ImGui::SetTooltip("%s", ClassNamesVOC[selectedClassID]);
+    }
+
+    std::vector<cv::Vec4b> preprocessedColorsVOC(ColorsVOC.size());
+    for (uint32_t colorIndex = 0; colorIndex < ColorsVOC.size(); ++colorIndex)
+    {
+        float alpha = (selectedClassID == colorIndex) ? 0.5f : 0.4f;
+        preprocessedColorsVOC[colorIndex] = abgr2bgra(changeAlpha(ColorsVOC[colorIndex], alpha));
+    }
+
+    cv::Mat coloredMask(annotation.Mask.size(), CV_8UC4);
+    for (int row = 0; row < coloredMask.rows; ++row)
+    {
+        for (int col = 0; col < coloredMask.cols; ++col)
+        {
+            auto classID = annotation.Mask.at<uint8_t>(row, col);
+            coloredMask.at<cv::Vec4b>(row, col) = preprocessedColorsVOC[classID];
+        }
+    }
+
+    if (!mSegmentationMask || (mSegmentationMask->width() != (uint32_t)annotation.Mask.cols) || (mSegmentationMask->height() != (uint32_t)annotation.Mask.rows))
+        mSegmentationMask = std::make_shared<Texture>(coloredMask);
+    else
+        mSegmentationMask->setData(coloredMask);
+
+    ImDrawList *drawList = ImGui::GetWindowDrawList();
+    drawList->AddImage(reinterpret_cast<ImTextureID>(mSegmentationMask->rendererID()), mInitPos, {mInitPos.x + mViewerSize.x, mInitPos.y + mViewerSize.y});
 }
 
 void AnnotationRenderer::operator()(const KeypointsAnnotation&)
@@ -82,6 +133,16 @@ ImU32 AnnotationRenderer::changeAlpha(ImU32 color, float desiredAlpha)
     float alphaF = desiredAlpha * 255.f;                // from 0.f to 255.f
     ImU32 alpha = (ImU32)(alphaF) << 24;                // alpha is left-most byte
     return (alpha & ~colorMask) | (color & colorMask);  // set alpha and do not change color
+}
+
+cv::Vec4b AnnotationRenderer::abgr2bgra(ImU32 color)
+{
+    static const uint32_t aMask = 0xff000000;
+    static const uint32_t bMask = 0x00ff0000;
+    static const uint32_t gMask = 0x0000ff00;
+    static const uint32_t rMask = 0x000000ff;
+
+    return {uint8_t((color & bMask) >> 16), uint8_t((color & gMask) >> 8), uint8_t(color & rMask), uint8_t((color & aMask) >> 24)};
 }
 
 }
