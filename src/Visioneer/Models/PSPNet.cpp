@@ -22,6 +22,7 @@ void PSPNet::onAttach()
 {
     Ort::SessionOptions sessionOptions;
     sessionOptions.SetIntraOpNumThreads(4);
+    sessionOptions.SetInterOpNumThreads(4);
     sessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
 
     mSession = Ort::Session(mEnv, "../resources/models/PSPNet_PascalVOC.onnx", sessionOptions);

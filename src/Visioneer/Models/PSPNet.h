@@ -20,9 +20,6 @@ public:
 
     std::string getName() const override { return "PSPNet"; }
 
-    // temporary public (I guess)
-    float ConfidenceThreshold = 0.5f;
-
 private:
     Ort::Env mEnv{OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE, "PSPNet"};
     Ort::Session mSession{nullptr};

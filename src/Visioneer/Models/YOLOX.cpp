@@ -14,6 +14,8 @@ YOLOX::YOLOX()
 {
     for (const auto& [name, path] : mVersionNamesModelPaths)
         mVersionNames.push_back(name);
+
+    VSR_INFO("Available Providers: {}", fmt::join(Ort::GetAvailableProviders(), ", "));
 }
 
 YOLOX::~YOLOX()
@@ -24,6 +26,7 @@ void YOLOX::onAttach()
 {
     Ort::SessionOptions sessionOptions;
     sessionOptions.SetIntraOpNumThreads(4);
+    sessionOptions.SetInterOpNumThreads(4);
     sessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
 
     mSession = Ort::Session(mEnv, mVersionNamesModelPaths[CurrentVersionNameIndex].Path, sessionOptions);
