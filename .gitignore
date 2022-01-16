@@ -1,4 +1,9 @@
 *.user
 
 build/
+Debug/
+Release/
+
+3rdparty/onnxruntime/
+
 drafts/

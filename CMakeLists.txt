@@ -8,10 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories("src/")
 
 find_package(OpenCV 4.5.3 REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
 
-# temporary
-set(ONNXRUNTIME_DIR "~/libs/onnxruntime-1.9.0")
+set(ONNXRUNTIME_DIR "3rdparty/onnxruntime")
 include_directories("${ONNXRUNTIME_DIR}/include")
 link_directories("${ONNXRUNTIME_DIR}/lib")
 
@@ -27,7 +25,7 @@ add_subdirectory("3rdparty/GLFW")
 add_subdirectory("3rdparty/Glad")
 
 # should demo window be compiled
-set(IMGUI_DEMO ON)
+set(IMGUI_DEMO OFF)
 add_subdirectory("3rdparty/imgui")
 
 file(GLOB_RECURSE SOURCES "src/*")
