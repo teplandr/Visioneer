@@ -18,4 +18,21 @@ void Logger::init()
     sInstance->flush_on(spdlog::level::trace);
 }
 
+std::shared_ptr<spdlog::logger> &Logger::get()
+{
+    return sInstance;
+}
+
+spdlog::source_loc Logger::spdlogSourceLoc(const char *filename, int line, const std::string &funcsig)
+{
+    return {filename, line, funcsig.c_str()};
+}
+
+std::string Logger::spdlogSourceLocHelper(std::string_view functionSignature, std::string_view functionName)
+{
+    functionSignature.remove_suffix(functionSignature.size() - functionSignature.find(functionName) - functionName.size());
+    functionSignature.remove_prefix(functionSignature.find_last_of(' ') + 1);
+    return std::string(functionSignature);
+}
+
 }
