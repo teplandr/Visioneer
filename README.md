@@ -1,11 +1,17 @@
 # Visioneer
-
 This application allows you to evaluate the predictions of computer vision models under various conditions.
 
 ## How it works
+1. Drag and drop image from Content Browser Panel.
+![Drag and Drop Images](resources/github/DragDropImages.gif)
+
+2. Select model, enable it, tune parameters and assess predictions.
+![Visualize Predictions](resources/github/VisualizePredictions.gif)
+
+3. Add some augmentations and assess predictions again.
+![Augment Image](resources/github/AugmentImage.gif)
 
 ## Prerequisites
-
 - C++17 (I use gcc 9.3.0).
 - [Git LFS](https://git-lfs.github.com/) is required to download ONNX models.
 - OpenCV 4.5.3 or newer is required. If you have no OpenCV follow instructions, which are in the next section.
@@ -13,7 +19,6 @@ This application allows you to evaluate the predictions of computer vision model
 - spdlog, GLFW and ImGui installed via Git Submodules and do not require any configuration.
 
 ## Installation
-
 ```bash
 # Setup OpenCV
 # TODO
@@ -34,8 +39,8 @@ make -j$(nproc)
 # Setup ImGui widgets
 cp ../resources/internal/imgui.ini .
 ```
-## Dependencies
 
+## Dependencies
 - [spdlog](https://github.com/gabime/spdlog)
 - [glad](https://github.com/Dav1dde/glad)
 - [GLFW](https://github.com/glfw/glfw)
