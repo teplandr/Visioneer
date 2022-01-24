@@ -13,6 +13,7 @@ This application allows you to evaluate the predictions of computer vision model
 
 ## Prerequisites
 - C++17 (I use gcc 9.3.0).
+- CMake 3.16 or newer is required. Can be installed with apt or build from source.
 - [Git LFS](https://git-lfs.github.com/) is required to download ONNX models.
 - OpenCV 4.5.3 or newer is required. If you have no OpenCV follow instructions, which are in the next section.
 - ONNX Runtime installed from pre-build binaries available [here](https://github.com/microsoft/onnxruntime/releases/). Instructions are in the next section.
@@ -21,23 +22,31 @@ This application allows you to evaluate the predictions of computer vision model
 ## Installation
 ```bash
 # Setup OpenCV
-# TODO
+wget -q -O opencv.zip https://github.com/opencv/opencv/archive/refs/tags/4.5.3.zip
+unzip -q opencv.zip && rm opencv.zip
+cd opencv-4.5.3
+mkdir build && cd build
+cmake .. -DBUILD_LIST=dnn,imgcodecs -DBUILD_opencv_apps=OFF -DCMAKE_INSTALL_PREFIX=/opt/opencv-4.5.3
+sudo cmake --build . --target install -- -j$(nproc)
+cd ../..
 
 git clone --recursive https://github.com/teplandr/Visioneer.git
 cd Visioneer
 
 # Setup ONNX Runtime
-wget -q -O onnxruntime.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.9.0/onnxruntime-linux-x64-1.9.0.tgz
-tar xvzf onnxruntime.tgz 
+wget -q https://github.com/microsoft/onnxruntime/releases/download/v1.9.0/onnxruntime-linux-x64-1.9.0.tgz
+tar xvzf onnxruntime-linux-x64-1.9.0.tgz && rm onnxruntime-linux-x64-1.9.0.tgz
 mv onnxruntime-linux-x64-1.9.0 3rdparty/onnxruntime
-rm onnxruntime.tgz
 
 mkdir build && cd build
 cmake ..
-make -j$(nproc)
+cmake --build . -- -j$(nproc)
 
 # Setup ImGui widgets
 cp ../resources/internal/imgui.ini .
+
+# Run app
+./Visioneer
 ```
 
 ## Dependencies
